@@ -116,6 +116,7 @@ export interface Zorm<Schema extends GenericSchema> {
     fields: FieldChainFromSchema<Schema>;
     errors: ErrorChainFromSchema<Schema> & ErrorGetter;
     validate(): SafeParseResult<Schema>;
+    resetValidation: () => void;
     validation: SafeParseResult<Schema> | null;
     customIssues: ZodIssue[];
 }

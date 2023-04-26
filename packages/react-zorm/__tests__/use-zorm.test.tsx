@@ -166,6 +166,38 @@ test("form data is validated", async () => {
     expect(spy).toHaveBeenCalledWith({ thing: "content" });
 });
 
+test("form validation is reset", async () => {
+    const Schema = z.object({
+        thing: z.string().min(1),
+    });
+
+    const spy = jest.fn();
+
+    function Test() {
+        const zo = useZorm("form", Schema);
+
+        spy(zo.errors.thing()?.message);
+
+        return (
+            <form ref={zo.ref} data-testid="form">
+                <input data-testid="input" name={zo.fields.thing()} />
+
+                <button data-testid="clear" type="button" onClick={zo.resetValidation}>Clear validation</button>
+            </form>
+        );
+    }
+
+    render(<Test />);
+
+    expect(spy).toHaveBeenCalledWith(undefined);
+
+    fireEvent.submit(screen.getByTestId("form"));
+    expect(spy).toHaveBeenLastCalledWith("String must contain at least 1 character(s)")
+
+    fireEvent.click(screen.getByTestId("clear"));
+    expect(spy).toHaveBeenCalledWith(undefined);
+});
+
 test("class name shortcut", () => {
     const Schema = z.object({
         thing: z.string().min(1),
